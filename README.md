@@ -26,7 +26,7 @@ dataset/
   electricity/electricity.csv
 ```
 
-The dataset files are not included in this repository.
+All datasets are public LTSF benchmarks. You can download them from [Autoformer](https://drive.google.com/drive/folders/1ZOYpTUa82_jCcxIdTmyr0LXQfvaM9vIy) and place them under `dataset/` following the structure above. The dataset files are not included in this repository.
 
 ## Training
 
