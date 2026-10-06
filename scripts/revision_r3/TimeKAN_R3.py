@@ -20,7 +20,7 @@ class ChebyKANLayer(nn.Module):
         x = self.fc1(x.reshape(B*N,C))
         x = x.reshape(B,N,-1).contiguous()
         return x
-    
+
 
 class FrequencyDecomp(nn.Module):
 
@@ -29,7 +29,7 @@ class FrequencyDecomp(nn.Module):
         self.configs = configs
 
     def forward(self, level_list):
-      
+
         level_list_reverse = level_list.copy()
         level_list_reverse.reverse()
         out_low = level_list_reverse[0]
@@ -43,11 +43,11 @@ class FrequencyDecomp(nn.Module):
             out_high_left = out_high - out_high_res
             out_low = out_high
             if i + 2 <= len(level_list_reverse) - 1:
-                out_high = level_list_reverse[i + 2]    
-            out_level_list.append(out_high_left) 
+                out_high = level_list_reverse[i + 2]
+            out_level_list.append(out_high_left)
         out_level_list.reverse()
-        return out_level_list   
-    
+        return out_level_list
+
     def frequency_interpolation(self,x,seq_len,target_len):
         len_ratio = seq_len/target_len
         x_fft = torch.fft.rfft(x, dim=2)
@@ -56,18 +56,18 @@ class FrequencyDecomp(nn.Module):
         out = torch.fft.irfft(out_fft, dim=2)
         out = out * len_ratio
         return out
-    
+
 
 class FrequencyMixing(nn.Module):
 
     def __init__(self, configs):
         super(FrequencyMixing, self).__init__()
         self.configs = configs
-        
+
         self.front_block = M_KAN(configs.d_model,
                                  self.configs.seq_len // (self.configs.down_sampling_window ** (self.configs.down_sampling_layers)),
                                  order=configs.begin_order)
-                   
+
         # 为每个层级添加处理模块
         self.front_blocks = torch.nn.ModuleList(
                 [
@@ -76,7 +76,7 @@ class FrequencyMixing(nn.Module):
                           order=i+configs.begin_order+1)
                     for i in range(configs.down_sampling_layers)
                 ])
-      
+
     def forward(self, level_list):
         level_list_reverse = level_list.copy()
         level_list_reverse.reverse()
@@ -106,7 +106,7 @@ class FrequencyMixing(nn.Module):
         out = torch.fft.irfft(out_fft, dim=2)
         out = out * len_ratio
         return out
-    
+
 class M_KAN(nn.Module):
     def __init__(self,d_model,seq_len,order):
         super().__init__()
@@ -118,7 +118,7 @@ class M_KAN(nn.Module):
         x1 = self.channel_mixer(x)
         x2 = self.conv(x)
         out  = x1 + x2
-        return out 
+        return out
 
 class BasicConv(nn.Module):
     def __init__(self,c_in,c_out, kernel_size, degree,stride=1, padding=0, dilation=1, groups=1, act=False, bn=False, bias=False,dropout=0.):
@@ -128,7 +128,7 @@ class BasicConv(nn.Module):
         self.bn = nn.BatchNorm1d(c_out) if bn else None
         self.act = nn.GELU() if act else None
         self.dropout = nn.Dropout(dropout)
-    def forward(self, x): 
+    def forward(self, x):
         if self.bn is not None:
             x = self.bn(x)
         x = self.conv(x.transpose(-1,-2)).transpose(-1,-2)
@@ -178,7 +178,7 @@ class Model(nn.Module):
 
     def forecast(self, x_enc):
         x_enc = self.__multi_level_process_inputs(x_enc)
-        
+
         x_list = []
         for i, x in zip(range(len(x_enc)), x_enc, ):
             B, T, N = x.size()
@@ -186,7 +186,7 @@ class Model(nn.Module):
             x = x.permute(0, 2, 1).contiguous().reshape(B * N, T, 1)
             x_list.append(x)
 
-       
+
         enc_out_list = []
         for i, x in zip(range(len(x_list)), x_list):
             enc_out = self.enc_embedding(x, None)  # [B,T,C]
@@ -204,7 +204,7 @@ class Model(nn.Module):
         dec_out = self.projection_layer(dec_out).reshape(B, self.configs.c_out, self.pred_len).permute(0, 2, 1).contiguous()
         dec_out = self.normalize_layers[0](dec_out, 'denorm')
         return dec_out
-    
+
 
     def __multi_level_process_inputs(self, x_enc):
         down_pool = torch.nn.AvgPool1d(self.configs.down_sampling_window)
