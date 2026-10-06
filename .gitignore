@@ -22,3 +22,7 @@ logs/
 *.pdf
 
 result_long_term_forecast.txt
+
+# R3 local runtime outputs
+r3_runs/
+r3_profile*.json

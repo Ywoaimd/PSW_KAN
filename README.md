@@ -60,3 +60,7 @@ scripts/                # reproduced experiment scripts
 ## Acknowledgement
 
 This implementation builds on the TimeKAN codebase and common LTSF experiment infrastructure.
+
+## R3 reproducibility additions
+
+See [scripts/revision_r3](scripts/revision_r3/README.md) for explicit-seed component ablations, 24 shared configurations, and full-model forward arithmetic profiling. The R3 experiments use PyTorch 2.5.1+cu121; this differs from the legacy runtime noted above. Experiment outputs are not distributed.
