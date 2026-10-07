@@ -323,7 +323,7 @@ class Model(nn.Module):
             self.se_after_prediction = None
 
         # 顶层 AdpWavelet 微残差（当 pred_len != 720 时启用；禁用时不实例化以避免影响 RNG 序列）
-        self.adpwave_enabled = (int(self.configs.pred_len) != 720) and getattr(configs, "r3_reswave", True)
+        self.adpwave_enabled = (int(self.configs.pred_len) != 720) and getattr(configs, "ablation_reswave", True)
         if self.adpwave_enabled:
             self.adpwave = AdpWaveletBlock(d_model=configs.d_model, reduction=4, kernel_sizes=(5, 3), dropout=0.0)
             self.adpwave_tau = float(getattr(configs, 'adpwave_tau', 0.15))
@@ -333,7 +333,7 @@ class Model(nn.Module):
 
         # PatchLite 并联分支
         self.patch_alpha = float(getattr(configs, 'patch_alpha', 0.6))
-        self.patch_block = PatchLiteBlock(configs) if getattr(configs, "r3_patch", True) else None
+        self.patch_block = PatchLiteBlock(configs) if getattr(configs, "ablation_patch", True) else None
 
     def forecast(self, x_enc):
         # 保留原始输入以供 PatchLite 分支

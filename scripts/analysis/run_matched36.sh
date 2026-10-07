@@ -2,7 +2,7 @@
 set -euo pipefail
 # Run manually only after checking data paths. This script starts 36 trainings (12 matched full references plus 24 ablations).
 repo="${1:?Usage: bash run_missing24.sh /absolute/path/to/TimeKAN [output_directory]}"
-output="${2:-$PWD/r3_runs}"
+output="${2:-$PWD/ablation_runs}"
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 mkdir -p "$output/logs"
 for dataset in Electricity ETTh1; do
@@ -14,7 +14,7 @@ for dataset in Electricity ETTh1; do
           echo "Refusing to overwrite $logfile" >&2
           exit 1
         fi
-        "${R3_PYTHON:-python}" "$script_dir/run_ablation.py" --repo "$repo" --dataset "$dataset" --horizon "$horizon" --variant "$variant" --seed "$seed" --output "$output" --execute > "$logfile" 2>&1
+        "${EXPERIMENT_PYTHON:-python}" "$script_dir/run_ablation.py" --repo "$repo" --dataset "$dataset" --horizon "$horizon" --variant "$variant" --seed "$seed" --output "$output" --execute > "$logfile" 2>&1
       done
     done
   done
