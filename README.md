@@ -61,6 +61,4 @@ scripts/                # reproduced experiment scripts
 
 This implementation builds on the TimeKAN codebase and common LTSF experiment infrastructure.
 
-## Ablation and computational analysis
-
-See [scripts/analysis](scripts/analysis/README.md) for component ablations with explicit random seeds, 24 shared backbone configurations, and full-model forward FLOPs and parameter profiling. The guide describes the required dependencies and commands.
+The 24 dataset/horizon configurations are also listed in `scripts/configurations.json`.
